@@ -12,17 +12,19 @@ import {
   Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { title: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { title: "Devices", path: "/dashboard/devices", icon: Cpu },
-  { title: "Company", path: "/company", icon: Building2 },
-  { title: "About", path: "/about", icon: Info },
+  { title: "Company", path: "/dashboard/company", icon: Building2 },
+  { title: "About", path: "/dashboard/about", icon: Info },
 ];
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth();
 
   return (
     <motion.aside
@@ -50,7 +52,7 @@ export function AppSidebar() {
       {/* Nav */}
       <nav className="flex-1 py-4 px-2 space-y-1">
         {navItems.map((item) => {
-          const active = location.pathname === item.path;
+          const active = location.pathname === item.path || (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
           return (
             <Link
               key={item.path}
@@ -80,13 +82,10 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Collapse Toggle */}
+      {/* Bottom */}
       <div className="border-t border-border p-2 shrink-0 flex flex-col gap-1">
         <button
-          onClick={() => {
-            localStorage.removeItem("access_token");
-            window.location.href = "/login";
-          }}
+          onClick={logout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors w-full"
         >
           <LogOut className="h-5 w-5 shrink-0" />

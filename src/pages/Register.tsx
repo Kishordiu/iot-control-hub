@@ -1,23 +1,34 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Eye, EyeOff } from "lucide-react";
+import { Shield, Eye, EyeOff, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 
-export default function Login() {
+export default function Register() {
+  const [companyName, setCompanyName] = useState("");
+  const [adminName, setAdminName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const { login, loading, error } = useAuth();
+  const [localError, setLocalError] = useState("");
+  const { register, loading, error } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    if (password !== confirmPassword) {
+      setLocalError("Passwords do not match");
+      return;
+    }
+    if (password.length < 8) {
+      setLocalError("Password must be at least 8 characters");
+      return;
+    }
+    setLocalError("");
+    register({ companyName, adminName, email, password });
   };
 
   return (
@@ -26,21 +37,34 @@ export default function Login() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-sm"
+        className="w-full max-w-md"
       >
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
             <Shield className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground">ZeroTrust IoT</span>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground">Sign in</h1>
-          <p className="text-sm text-muted-foreground mt-1">Access your device management console</p>
+          <h1 className="text-2xl font-bold text-foreground">Create Account</h1>
+          <p className="text-sm text-muted-foreground mt-1">Register your organization</p>
         </div>
 
         <form onSubmit={handleSubmit} className="glass-panel p-6 space-y-4">
-          {error && (
-            <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">{error}</div>
+          {(error || localError) && (
+            <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">{error || localError}</div>
           )}
+
+          <div className="space-y-2">
+            <Label htmlFor="companyName">Company Name</Label>
+            <div className="relative">
+              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Acme Corp" required className="bg-secondary pl-9" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="adminName">Admin Full Name</Label>
+            <Input id="adminName" value={adminName} onChange={(e) => setAdminName(e.target.value)} placeholder="John Doe" required className="bg-secondary" />
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -65,23 +89,18 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Checkbox id="remember" checked={rememberMe} onCheckedChange={(c) => setRememberMe(!!c)} />
-              <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">Remember me</Label>
-            </div>
-            <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-              Forgot password?
-            </Link>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" required className="bg-secondary" />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Creating Account..." : "Create Account"}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline">Create Account</Link>
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:underline">Sign In</Link>
           </p>
         </form>
       </motion.div>
