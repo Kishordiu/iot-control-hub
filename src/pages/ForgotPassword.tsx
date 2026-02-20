@@ -5,7 +5,7 @@ import { Shield, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -20,11 +20,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-sm"
-      >
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Shield className="h-8 w-8 text-primary mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground">Reset Password</h1>
@@ -35,9 +31,7 @@ export default function ForgotPassword() {
           <div className="glass-panel p-6 text-center space-y-4">
             <p className="text-foreground">Check your email for a reset link.</p>
             <Link to="/login">
-              <Button variant="outline" className="gap-2">
-                <ArrowLeft className="h-4 w-4" /> Back to Sign In
-              </Button>
+              <Button variant="outline" className="gap-2"><ArrowLeft className="h-4 w-4" /> Back to Sign In</Button>
             </Link>
           </div>
         ) : (
