@@ -1,5 +1,6 @@
-import type { DeviceStatus } from "@/types/device";
 import { cn } from "@/lib/utils";
+
+export type DeviceStatus = "online" | "offline" | "warning" | "critical";
 
 interface StatusIndicatorProps {
   status: DeviceStatus;
@@ -7,26 +8,42 @@ interface StatusIndicatorProps {
   size?: "sm" | "md" | "lg";
 }
 
-const statusConfig: Record<DeviceStatus, { label: string; className: string }> = {
-  online: { label: "Online", className: "status-dot-online" },
-  offline: { label: "Offline", className: "status-dot-offline" },
-  warning: { label: "Warning", className: "status-dot-warning" },
-  critical: { label: "Critical", className: "status-dot-critical" },
+const statusConfig: Record<
+  DeviceStatus,
+  { label: string; color: string }
+> = {
+  online: { label: "Online", color: "bg-green-500" },
+  offline: { label: "Offline", color: "bg-gray-500" },
+  warning: { label: "Warning", color: "bg-yellow-500" },
+  critical: { label: "Critical", color: "bg-red-500" },
 };
 
 const sizeClasses = {
   sm: "w-2 h-2",
-  md: "w-2.5 h-2.5",
-  lg: "w-3.5 h-3.5",
+  md: "w-3 h-3",
+  lg: "w-4 h-4",
 };
 
-export function StatusIndicator({ status, showLabel = false, size = "md" }: StatusIndicatorProps) {
-  const config = statusConfig[status];
+export function StatusIndicator({
+  status,
+  showLabel = false,
+  size = "md",
+}: StatusIndicatorProps) {
+  const config = statusConfig[status] ?? statusConfig.offline;
+
   return (
     <div className="flex items-center gap-2">
-      <span className={cn(config.className, sizeClasses[size])} />
+      <span
+        className={cn(
+          "rounded-full",
+          config.color,
+          sizeClasses[size]
+        )}
+      />
       {showLabel && (
-        <span className="text-sm text-muted-foreground capitalize">{config.label}</span>
+        <span className="text-sm text-muted-foreground">
+          {config.label}
+        </span>
       )}
     </div>
   );

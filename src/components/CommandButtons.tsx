@@ -1,39 +1,59 @@
-import { Lock, Unlock, RotateCcw, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useDeviceCommand } from "@/hooks/useDevices";
-import { toast } from "@/hooks/use-toast";
+import { useIssueCommand } from "@/hooks/useDevices";
+import { useToast } from "@/hooks/use-toast";
 
-interface CommandButtonsProps {
-  deviceId: string;
+interface Props {
+  deviceUid: string;
+  tamperDetected: boolean;
 }
 
-export function CommandButtons({ deviceId }: CommandButtonsProps) {
-  const { mutate, isPending } = useDeviceCommand();
+export function CommandButtons({ deviceUid, tamperDetected }: Props) {
+  const { mutate, isPending } = useIssueCommand();
+  const { toast } = useToast();
 
-  const execute = (type: "lock" | "unlock" | "reset" | "emergency_shutdown") => {
+  const send = (type: string) => {
+    if (tamperDetected && type === "UNLOCK") {
+      toast({
+        title: "Security Blocked",
+        description: "Device is in tamper state. Unlock disabled.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     mutate(
-      { type, deviceId },
+      { deviceUid, commandType: type },
       {
-        onSuccess: () => toast({ title: "Command sent", description: `${type} command issued to device.` }),
-        onError: () => toast({ title: "Command failed", description: "Unable to send command.", variant: "destructive" }),
+        onSuccess: () =>
+          toast({ title: `${type} command issued successfully` }),
       }
     );
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
-      <Button size="sm" variant="outline" disabled={isPending} onClick={() => execute("lock")} className="gap-1.5">
-        <Lock className="h-3.5 w-3.5" /> Lock
-      </Button>
-      <Button size="sm" variant="outline" disabled={isPending} onClick={() => execute("unlock")} className="gap-1.5">
-        <Unlock className="h-3.5 w-3.5" /> Unlock
-      </Button>
-      <Button size="sm" variant="outline" disabled={isPending} onClick={() => execute("reset")} className="gap-1.5">
-        <RotateCcw className="h-3.5 w-3.5" /> Reset
-      </Button>
-      <Button size="sm" variant="destructive" disabled={isPending} onClick={() => execute("emergency_shutdown")} className="gap-1.5">
-        <AlertTriangle className="h-3.5 w-3.5" /> Emergency Shutdown
-      </Button>
+    <div className="flex flex-wrap gap-3">
+      <button
+        onClick={() => send("LOCK")}
+        disabled={isPending}
+        className="px-4 py-2 bg-red-600 text-white rounded-lg"
+      >
+        Lock
+      </button>
+
+      <button
+        onClick={() => send("UNLOCK")}
+        disabled={isPending || tamperDetected}
+        className="px-4 py-2 bg-green-600 text-white rounded-lg"
+      >
+        Unlock
+      </button>
+
+      <button
+        onClick={() => send("ROTATE_KEYS")}
+        disabled={isPending}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+      >
+        Rotate Keys
+      </button>
     </div>
   );
 }

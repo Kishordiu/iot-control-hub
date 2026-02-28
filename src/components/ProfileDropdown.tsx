@@ -1,45 +1,90 @@
 import { useState } from "react";
-import { User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { User, Settings, LogOut, Moon, Sun, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 
 export function ProfileDropdown() {
   const [open, setOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <div className="relative">
-      <Button variant="ghost" className="gap-2 h-9 px-2" onClick={() => setOpen(!open)}>
-        <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center">
-          <User className="h-3.5 w-3.5 text-primary" />
-        </div>
-        <span className="text-sm text-foreground hidden md:inline">{user?.name || "Admin"}</span>
-        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(!open)}
+        className="rounded-full"
+      >
+        <User className="h-5 w-5 text-muted-foreground" />
       </Button>
 
       <AnimatePresence>
         {open && (
           <>
-            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setOpen(false)}
+            />
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute right-0 top-full mt-1 w-48 glass-panel z-50 py-1"
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute right-0 mt-2 w-64 glass-panel z-50 p-3 space-y-2 rounded-2xl shadow-xl"
             >
-              <div className="px-3 py-2 border-b border-border">
-                <p className="text-sm font-medium text-foreground">{user?.name || "Admin"}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email || "admin@company.com"}</p>
+              {/* Profile Header */}
+              <div className="flex items-center gap-3 p-2 rounded-xl bg-secondary/40">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold">
+                  U
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Username</p>
+                  <p className="text-xs text-muted-foreground">
+                    user@email.com
+                  </p>
+                </div>
               </div>
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
-                <Settings className="h-4 w-4" /> Settings
+
+              {/* Menu Items */}
+              <button className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-secondary/50 transition">
+                <Settings className="h-4 w-4" />
+                <span className="text-sm">Settings</span>
               </button>
+
+              {/* Theme Toggle */}
               <button
-                onClick={logout}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                onClick={toggleTheme}
+                className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-secondary/50 transition"
               >
-                <LogOut className="h-4 w-4" /> Logout
+                {theme === "dark" ? (
+                  <>
+                    <Sun className="h-4 w-4 text-yellow-400" />
+                    <span className="text-sm">Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm">Dark Mode</span>
+                  </>
+                )}
+              </button>
+
+              {/* Fun Bonus Section */}
+              <div className="p-2 rounded-xl bg-gradient-to-r from-primary/20 to-purple-500/20 flex items-center gap-2 text-xs">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span>Pro Mode Coming Soon 🚀</span>
+              </div>
+
+              <div className="border-t border-border my-2" />
+
+              <button className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-destructive/10 text-destructive transition">
+                <LogOut className="h-4 w-4" />
+                <span className="text-sm">Logout</span>
               </button>
             </motion.div>
           </>

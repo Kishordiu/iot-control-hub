@@ -1,93 +1,103 @@
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, Cpu, Thermometer, HardDrive, Wifi, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useDevice } from "@/hooks/useDevices";
-import { StatusIndicator } from "@/components/StatusIndicator";
+import { useDevice, useDeviceLogs } from "@/hooks/useDevices";
 import { CommandButtons } from "@/components/CommandButtons";
-import { Button } from "@/components/ui/button";
+import { SimulatorControl } from "@/components/SimulatorControl";
 
-function MetricCard({ icon: Icon, label, value, unit, color }: { icon: any; label: string; value?: number; unit: string; color: string }) {
+export default function DeviceDetails() {
+  const { id } = useParams();
+  const { data: device, isLoading } = useDevice(id || "");
+  const { data: logs = [] } = useDeviceLogs(device?.device_uid);
+
+  if (isLoading || !device) return <div className="p-6">Loading...</div>;
+
+  const isOnline =
+    device.last_seen &&
+    new Date(device.last_seen).getTime() >
+      Date.now() - 2 * 60 * 1000;
+
   return (
-    <div className="glass-panel p-4">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon className={`h-4 w-4 ${color}`} />
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">{label}</span>
+    <div className="p-8 space-y-8">
+
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">{device.device_uid}</h1>
+          <p className="text-sm text-muted-foreground">
+            Firmware: {device.firmware_version ?? "N/A"}
+          </p>
+        </div>
+
+        <div className="flex gap-4 items-center">
+          <span
+            className={`px-3 py-1 rounded-full text-xs ${
+              isOnline ? "bg-green-600" : "bg-gray-600"
+            }`}
+          >
+            {isOnline ? "ONLINE" : "OFFLINE"}
+          </span>
+
+          <span
+            className={`px-3 py-1 rounded-full text-xs ${
+              device.tamper_detected
+                ? "bg-red-600"
+                : "bg-green-600"
+            }`}
+          >
+            {device.tamper_detected
+              ? "TAMPER DETECTED"
+              : "SECURE"}
+          </span>
+        </div>
       </div>
-      <span className="text-2xl font-bold text-foreground font-mono">
-        {value !== undefined ? value : "—"}
-        <span className="text-sm text-muted-foreground ml-1">{unit}</span>
-      </span>
+
+      {/* Security Overview */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <Card title="Trust State" value={device.trust_state} />
+        <Card title="Lockdown" value={device.lockdown ? "YES" : "NO"} />
+        <Card title="Key Version" value={device.key_version.toString()} />
+      </div>
+
+      {/* Commands */}
+      <div className="bg-card p-6 rounded-xl border">
+        <h2 className="font-semibold mb-4">Command Center</h2>
+        <CommandButtons
+          deviceUid={device.device_uid}
+          tamperDetected={device.tamper_detected}
+        />
+      </div>
+      <div className="mt-4 border-t pt-4">
+        <SimulatorControl/>
+      </div>
+
+      {/* Logs */}
+      <div className="bg-card p-6 rounded-xl border">
+        <h2 className="font-semibold mb-4">Activity Timeline</h2>
+        <div className="space-y-3 max-h-72 overflow-y-auto">
+          {logs.map((log) => (
+            <div
+              key={log.id}
+              className="p-3 bg-muted/30 rounded"
+            >
+              <div className="flex justify-between text-xs opacity-70">
+                <span>{log.event_type}</span>
+                <span>
+                  {new Date(log.created_at).toLocaleString()}
+                </span>
+              </div>
+              <div>{log.message}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function DeviceDetails() {
-  const { id } = useParams<{ id: string }>();
-  const { data: device, isLoading } = useDevice(id || "");
-
-  if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground">Loading device...</div>;
-  }
-
-  if (!device) {
-    return (
-      <div className="p-8 text-center space-y-4">
-        <p className="text-muted-foreground">Device not found. Ensure backend is connected.</p>
-        <Link to="/dashboard">
-          <Button variant="outline" className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
-        </Link>
-      </div>
-    );
-  }
-
+function Card({ title, value }: { title: string; value: string }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link to="/dashboard">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-5 w-5" /></Button>
-        </Link>
-        <div className="flex-1">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">{device.name}</h1>
-            <StatusIndicator status={device.status} showLabel size="lg" />
-          </div>
-          <p className="text-sm text-muted-foreground font-mono mt-1">{device.id}</p>
-        </div>
-      </div>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <MetricCard icon={Cpu} label="CPU" value={device.metrics?.cpuUsage} unit="%" color="text-primary" />
-        <MetricCard icon={HardDrive} label="Memory" value={device.metrics?.memoryUsage} unit="%" color="text-info" />
-        <MetricCard icon={Thermometer} label="Temp" value={device.metrics?.temperature} unit="°C" color="text-warning" />
-        <MetricCard icon={Wifi} label="Signal" value={device.metrics?.signalStrength} unit="dBm" color="text-success" />
-        <MetricCard icon={Clock} label="Uptime" value={device.metrics?.uptime} unit="hrs" color="text-muted-foreground" />
-      </div>
-
-      {/* Info + Commands */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="glass-panel p-6 space-y-3">
-          <h2 className="font-semibold text-foreground mb-4">Device Info</h2>
-          {[
-            ["Type", device.type],
-            ["IP Address", device.ipAddress],
-            ["MAC Address", device.macAddress],
-            ["Firmware", device.firmwareVersion],
-            ["Location", device.location],
-            ["Last Seen", device.lastSeen],
-          ].map(([label, val]) => (
-            <div key={label} className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{label}</span>
-              <span className="text-foreground font-mono">{val}</span>
-            </div>
-          ))}
-        </div>
-        <div className="glass-panel p-6">
-          <h2 className="font-semibold text-foreground mb-4">Commands</h2>
-          <CommandButtons deviceId={device.id} />
-        </div>
-      </div>
-    </motion.div>
+    <div className="bg-card border rounded-xl p-6">
+      <div className="text-sm text-muted-foreground">{title}</div>
+      <div className="text-xl font-bold mt-2">{value}</div>
+    </div>
   );
 }

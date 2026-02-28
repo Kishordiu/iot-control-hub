@@ -26,22 +26,26 @@ export function AppSidebar() {
   const location = useLocation();
   const { logout } = useAuth();
 
+  const isActive = (path: string) =>
+    location.pathname === path ||
+    (path !== "/dashboard" && location.pathname.startsWith(path));
+
   return (
     <motion.aside
-      animate={{ width: collapsed ? 72 : 240 }}
-      transition={{ duration: 0.2 }}
-      className="h-screen sticky top-0 flex flex-col border-r border-border bg-sidebar overflow-hidden z-30"
+      animate={{ width: collapsed ? 80 : 260 }}
+      transition={{ duration: 0.25 }}
+      className="flex h-screen md:h-screen md:sticky md:top-0 flex-col border-r border-white/10 bg-black/40 backdrop-blur-xl"
     >
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-4 h-16 border-b border-border shrink-0">
-        <Shield className="h-7 w-7 text-primary shrink-0" />
+      {/* Logo Section */}
+      <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
+        <Shield className="h-7 w-7 text-cyan-400 shrink-0" />
         <AnimatePresence>
           {!collapsed && (
             <motion.span
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              className="font-bold text-foreground whitespace-nowrap overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="font-bold text-white text-lg tracking-wide"
             >
               ZeroTrust IoT
             </motion.span>
@@ -49,22 +53,24 @@ export function AppSidebar() {
         </AnimatePresence>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 py-4 px-2 space-y-1">
+      {/* Navigation */}
+      <nav className="flex-1 py-6 px-3 space-y-2">
         {navItems.map((item) => {
-          const active = location.pathname === item.path || (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
+          const active = isActive(item.path);
+
           return (
             <Link
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors",
+                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                 active
-                  ? "bg-primary/10 text-primary"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  ? "bg-cyan-500/20 text-cyan-400 shadow-inner"
+                  : "text-gray-300 hover:bg-white/5 hover:text-white"
               )}
             >
               <item.icon className="h-5 w-5 shrink-0" />
+
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
@@ -82,20 +88,25 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Bottom */}
-      <div className="border-t border-border p-2 shrink-0 flex flex-col gap-1">
+      {/* Bottom Section */}
+      <div className="border-t border-white/10 p-3 space-y-2">
         <button
-          onClick={logout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors w-full"
+          onClick={async () => await logout()}
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition w-full"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Logout</span>}
         </button>
+
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center p-2 rounded-md text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+          className="flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-white/10 transition w-full"
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
         </button>
       </div>
     </motion.aside>
