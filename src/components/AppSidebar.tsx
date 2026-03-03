@@ -32,20 +32,21 @@ export function AppSidebar() {
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 80 : 260 }}
-      transition={{ duration: 0.25 }}
-      className="flex h-screen md:h-screen md:sticky md:top-0 flex-col border-r border-white/10 bg-black/40 backdrop-blur-xl"
+      animate={{ width: collapsed ? 84 : 240 }}
+      transition={{ duration: 0.2 }}
+      className="flex h-screen md:sticky md:top-0 flex-col border-r border-border bg-background"
     >
-      {/* Logo Section */}
-      <div className="flex items-center gap-3 px-5 h-16 border-b border-white/10">
-        <Shield className="h-7 w-7 text-cyan-400 shrink-0" />
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 h-16 border-b border-border">
+        <Shield className="h-6 w-6 text-primary shrink-0" />
+
         <AnimatePresence>
           {!collapsed && (
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="font-bold text-white text-lg tracking-wide"
+              className="font-semibold text-base tracking-tight"
             >
               ZeroTrust IoT
             </motion.span>
@@ -54,7 +55,7 @@ export function AppSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-6 px-3 space-y-2">
+      <nav className="flex-1 py-6 px-3 space-y-1.5">
         {navItems.map((item) => {
           const active = isActive(item.path);
 
@@ -63,10 +64,10 @@ export function AppSidebar() {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
                 active
-                  ? "bg-cyan-500/20 text-cyan-400 shadow-inner"
-                  : "text-gray-300 hover:bg-white/5 hover:text-white"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               <item.icon className="h-5 w-5 shrink-0" />
@@ -88,11 +89,11 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Bottom Section */}
-      <div className="border-t border-white/10 p-3 space-y-2">
+      {/* Bottom Controls */}
+      <div className="border-t border-border p-3 space-y-2">
         <button
           onClick={async () => await logout()}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition w-full"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition w-full"
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Logout</span>}
@@ -100,7 +101,7 @@ export function AppSidebar() {
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center p-2 rounded-lg text-gray-400 hover:bg-white/10 transition w-full"
+          className="flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:bg-muted transition w-full"
         >
           {collapsed ? (
             <ChevronRight className="h-4 w-4" />

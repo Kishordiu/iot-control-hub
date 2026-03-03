@@ -7,29 +7,63 @@ export default function Devices() {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <div className="p-6 text-muted-foreground">Loading devices...</div>;
+    return (
+      <div className="text-muted-foreground">
+        Loading devices...
+      </div>
+    );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Registered Devices</h1>
+    <div className="space-y-8">
+      
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Registered Devices
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Monitor and manage all connected IoT devices.
+        </p>
+      </div>
 
       {devices.length === 0 ? (
-        <div className="text-muted-foreground text-center mt-10">
+        <div className="text-muted-foreground text-center py-16 border border-border rounded-2xl bg-card">
           No devices registered yet.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {devices.map((device) => (
             <div
               key={device.id}
-              onClick={() => navigate(`/dashboard/devices/${device.id}`)}
-              className={`bg-card border border-border rounded-xl p-5 cursor-pointer hover:border-primary transition ${
-                device.lockdown ? "border-red-500/50" : ""
-              }`}
+              onClick={() =>
+                navigate(`/dashboard/devices/${device.id}`)
+              }
+              className={`
+                group
+                bg-card
+                border border-border
+                rounded-2xl
+                p-6
+                cursor-pointer
+                shadow-sm
+                hover:shadow-md
+                hover:-translate-y-0.5
+                transition-all duration-200
+                ${device.lockdown ? "border-red-500/40" : ""}
+              `}
             >
-              <div className="flex justify-between items-center mb-2">
-                <h2 className="font-semibold">{device.device_uid}</h2>
+              {/* Top Row */}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h2 className="font-semibold tracking-tight">
+                    {device.device_uid}
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Device ID
+                  </p>
+                </div>
+
                 <StatusIndicator
                   status={
                     device.trust_state === "compromised"
@@ -41,24 +75,44 @@ export default function Devices() {
                 />
               </div>
 
-              <p className="text-sm text-muted-foreground">
-                Trust: <span className="capitalize">{device.trust_state}</span>
-              </p>
+              {/* Metadata Section */}
+              <div className="space-y-3 text-sm">
+                
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Trust Level
+                  </span>
+                  <span className="capitalize font-medium">
+                    {device.trust_state}
+                  </span>
+                </div>
 
-              <p className="text-sm text-muted-foreground">
-                Tamper: {device.tamper_flag ? "DETECTED" : "Safe"}
-              </p>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Tamper Status
+                  </span>
+                  <span className={device.tamper_flag ? "text-red-500 font-medium" : "text-green-500 font-medium"}>
+                    {device.tamper_flag ? "Detected" : "Safe"}
+                  </span>
+                </div>
 
-              <p className="text-sm text-muted-foreground">
-                Lockdown: {device.lockdown ? "Enabled" : "Disabled"}
-              </p>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">
+                    Lockdown
+                  </span>
+                  <span className="font-medium">
+                    {device.lockdown ? "Enabled" : "Disabled"}
+                  </span>
+                </div>
+              </div>
 
-              <p className="text-xs text-muted-foreground mt-2">
+              {/* Footer */}
+              <div className="mt-6 pt-4 border-t border-border text-xs text-muted-foreground">
                 Last Seen:{" "}
                 {device.last_seen
                   ? new Date(device.last_seen).toLocaleString()
                   : "Never"}
-              </p>
+              </div>
             </div>
           ))}
         </div>

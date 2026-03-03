@@ -1,73 +1,140 @@
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Mail, Cpu, Wifi, Calendar, Shield } from "lucide-react";
-import api from "@/lib/api";
-import { SkeletonCard } from "@/components/SkeletonCard";
-
-interface CompanyInfo {
-  name: string;
-  adminEmail: string;
-  totalDevices: number;
-  activeDevices: number;
-  createdAt: string;
-}
+import { supabase } from "@/lib/supabase";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, Cpu, Wifi, Calendar } from "lucide-react";
 
 export default function Company() {
-  const { data, isLoading } = useQuery<CompanyInfo>({
-    queryKey: ["company"],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["company-overview"],
     queryFn: async () => {
-      const { data } = await api.get("/company");
-      return data;
+      // Get logged-in user
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError) throw userError;
+      const user = userData?.user;
+
+      // Total devices
+      const { count: totalDevices, error: totalError } = await supabase
+        .from("devices")
+        .select("*", { count: "exact", head: true });
+
+      if (totalError) throw totalError;
+
+      // Active devices (verified + not in lockdown)
+      const { count: activeDevices, error: activeError } =
+        await supabase
+          .from("devices")
+          .select("*", { count: "exact", head: true })
+          .eq("trust_state", "verified")
+          .eq("lockdown", false);
+
+      if (activeError) throw activeError;
+
+      return {
+        name: "ZeroTrust IoT",
+        adminEmail: user?.email ?? "N/A",
+        totalDevices: totalDevices ?? 0,
+        activeDevices: activeDevices ?? 0,
+        createdAt: user?.created_at ?? null,
+      };
     },
   });
 
-  const fields = data
-    ? [
-        { icon: Building2, label: "Company Name", value: data.name },
-        { icon: Mail, label: "Admin Email", value: data.adminEmail },
-        { icon: Cpu, label: "Total Devices", value: String(data.totalDevices) },
-        { icon: Wifi, label: "Active Devices", value: String(data.activeDevices) },
-        { icon: Calendar, label: "Created", value: new Date(data.createdAt).toLocaleDateString() },
-      ]
-    : [];
+  if (isLoading) {
+    return <div className="p-6 text-white">Loading company details...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 text-red-500">
+        Failed to load company details.
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Company</h1>
-        <p className="text-muted-foreground text-sm mt-1">Organization overview</p>
-      </div>
+    <div className="p-6 space-y-6 text-white">
+      <h1 className="text-3xl font-bold">Company</h1>
+      <p className="text-muted-foreground">
+        Organization overview
+      </p>
 
-      {isLoading ? (
-        <div className="grid md:grid-cols-2 gap-4">
-          {Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)}
-        </div>
-      ) : !data ? (
-        <div className="glass-panel p-12 text-center space-y-2">
-          <Shield className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">Company data unavailable. Connect your backend to view organization details.</p>
-        </div>
-      ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-panel divide-y divide-border">
-          {fields.map((field, i) => (
-            <motion.div
-              key={field.label}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="flex items-center gap-4 p-4"
-            >
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <field.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">{field.label}</p>
-                <p className="text-foreground font-medium font-mono">{field.value}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
+      <div className="grid gap-4 md:grid-cols-2">
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-4 flex items-center gap-4">
+            <Cpu className="text-cyan-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                COMPANY NAME
+              </p>
+              <p className="text-lg font-semibold">
+                {data?.name}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-4 flex items-center gap-4">
+            <Mail className="text-cyan-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                ADMIN EMAIL
+              </p>
+              <p className="text-lg font-semibold">
+                {data?.adminEmail}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-4 flex items-center gap-4">
+            <Cpu className="text-cyan-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                TOTAL DEVICES
+              </p>
+              <p className="text-lg font-semibold">
+                {data?.totalDevices}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-4 flex items-center gap-4">
+            <Wifi className="text-cyan-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                ACTIVE DEVICES
+              </p>
+              <p className="text-lg font-semibold">
+                {data?.activeDevices}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg md:col-span-2">
+          <CardContent className="p-4 flex items-center gap-4">
+            <Calendar className="text-cyan-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">
+                CREATED
+              </p>
+              <p className="text-lg font-semibold">
+                {data?.createdAt
+                  ? new Date(data.createdAt).toLocaleDateString()
+                  : "N/A"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
     </div>
   );
 }

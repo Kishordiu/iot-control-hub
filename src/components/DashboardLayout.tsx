@@ -4,21 +4,28 @@ import { TopNavbar } from "@/components/TopNavbar";
 
 export function DashboardLayout() {
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-      
+    <div className="flex min-h-screen w-full bg-muted/40 text-foreground">
+
       {/* Sidebar */}
-      <AppSidebar />
+      <div className="border-r border-border bg-background">
+        <AppSidebar />
+      </div>
 
       {/* Main Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
+      <div className="flex-1 flex flex-col min-w-0">
+
         {/* Top Navigation */}
-        <TopNavbar />
+        <div className="border-b border-border bg-background">
+          <TopNavbar />
+        </div>
 
         {/* Page Content */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-background">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto w-full max-w-7xl p-6 md:p-10">
+            <Outlet />
+          </div>
         </main>
+
       </div>
     </div>
   );

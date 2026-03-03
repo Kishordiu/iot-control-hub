@@ -48,10 +48,10 @@ export default function About() {
         </div>
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Created by</p>
-          <h2 className="text-xl font-bold text-foreground">K. Kishor Kumar</h2>
+          <h2 className="text-xl font-bold text-foreground">Code Strikers</h2>
           <div className="flex items-center justify-center gap-2 mt-2">
             <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold gradient-text">Kidiu</span>
+            <span className="text-sm font-semibold gradient-text">SEA MASONS</span>
           </div>
           <p className="text-xs text-muted-foreground mt-2">Industrial-grade IoT security for the connected world</p>
         </div>
