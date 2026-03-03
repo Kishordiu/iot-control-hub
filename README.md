@@ -1,22 +1,22 @@
-# Welcome to your Built by Kishor Kumar project
+# Welcome to your kiudiuu project
 
 ## Project info
 
-**URL**: https://Built by Kishor Kumar.dev/projects/REPLACE_WITH_PROJECT_ID
+**URL**: https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Built by Kishor Kumar**
+**Use kiudiuu**
 
-Simply visit the [Built by Kishor Kumar Project](https://Built by Kishor Kumar.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Simply visit the [kiudiuu Project](https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
 
-Changes made via Built by Kishor Kumar will be committed automatically to this repo.
+Changes made via kiudiuu will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Built by Kishor Kumar.
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in kiudiuu.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +62,12 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Built by Kishor Kumar](https://Built by Kishor Kumar.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Simply open [kiudiuu](https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Built by Kishor Kumar project?
+## Can I connect a custom domain to my kiudiuu project?
 
 Yes, you can!
 
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-Read more here: [Setting up a custom domain](https://docs.Built by Kishor Kumar.dev/features/custom-domain#custom-domain)
+Read more here: [Setting up a custom domain](https://docs.kiudiuu.dev/features/custom-domain#custom-domain)
