@@ -1,73 +1,97 @@
-# Welcome to your kiudiuu project
+🔐 Void-Trust
+Secure Hardware Architecture for Zero-Trust IoT Systems
 
-## Project info
+🧠 Problem Statement (CMV26403)
+Design a secure, hardware-level architecture to implement zero-trust principles for large-scale IoT and cyber-physical systems.
+The system must support:
 
-**URL**: https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID
+i~ Secure Boot
+i~ Hardware Root of Trust
+i~ Device Authentication
+i~ Encrypted Communication
+i~ Real-Time Tamper Detection
+i~ Scalability for smart cities and industrial IoT
 
-## How can I edit this code?
+🚀 Our Solution
 
-There are several ways of editing your application.
+Void-Trust is a Zero-Trust IoT security architecture that enforces continuous cryptographic verification of devices and dynamically manages device trust state.
 
-**Use kiudiuu**
+The system is divided into two layers:
+🏗 Architecture Overview
 
-Simply visit the [kiudiuu Project](https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
 
-Changes made via kiudiuu will be committed automatically to this repo.
+[ IoT Device (ESP32 / Future Secure Hardware) ]
+            ↓
+   HTTPS Signed Request
+            ↓
+Zero-Trust Verification Layer (Supabase Edge Function)
+            ↓
+HMAC Verification + Replay Protection
+            ↓
+Trust State Update (Database)
+            ↓
+Dashboard / Control System
 
-**Use your preferred IDE**
+🔐 Phase 1 – Zero-Trust Enforcement Layer (Implemented)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in kiudiuu.
+✅ Device Authentication
+HMAC-SHA256 per-device secret
+Server-side signature recalculation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+✅ Replay Protection
+Timestamp validation (5-minute window)
+Prevents reused packet attacks
 
-Follow these steps:
+✅ Encrypted Communication
+HTTPS (TLS secured)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+✅ Real-Time Tamper Detection
+If event_type = TAMPER_DETECTED:
+trust_state → compromised
+lockdown → true
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+✅ Trust State Management
+verified
+compromised
+lockdown enabled
 
-# Step 3: Install the necessary dependencies.
-npm i
+🧩 Phase 2 – Secure Hardware Architecture (Designed)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+To fully meet hardware-level requirements:
 
-**Edit a file directly in GitHub**
+🔹 Secure Boot
+Digitally signed firmware
+Bootloader verification before execution
+🔹 Hardware Root of Trust
+Secure element (e.g., ATECC608A) or ESP32 eFuse storage
+Secret key never exposed to firmware layer
+🔹 On-Device Tamper Detection
+GPIO tamper switch
+Voltage anomaly detection
+Physical enclosure sensor
+🔹 Signed Hardware Events
+All tamper events cryptographically signed before transmission.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+🛡 Zero-Trust Principles Implemented
+Never trust device permanently
+Verify every request
+Enforce cryptographic identity
+Revoke trust dynamically
+Lock compromised nodes automatically
 
-**Use GitHub Codespaces**
+🌍 Scalability
+Designed for deployment across:
+Smart Cities
+Industrial IoT
+Critical Infrastructure
+Cyber-Physical Systems
+Serverless backend ensures horizontal scalability.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+📊 Current Status
+Phase 1 – Zero-Trust Backend: ✅ Complete
+Phase 2 – Secure Hardware Module: 🔜 In Development
+The backend is production-ready and supports direct hardware integration without architectural modification.
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [kiudiuu](https://kiudiuu.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my kiudiuu project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.kiudiuu.dev/features/custom-domain#custom-domain)
+💡 Innovation
+Unlike traditional IoT systems that trust devices after initial provisioning, Void-Trust enforces continuous cryptographic validation and dynamic trust enforcement.
+This establishes the foundation for a hardware-backed Zero-Trust IoT security architecture.
