@@ -1,97 +1,70 @@
-🔐 Void-Trust
-Secure Hardware Architecture for Zero-Trust IoT Systems
+# IoT Control Hub
 
-🧠 Problem Statement (CMV26403)
-Design a secure, hardware-level architecture to implement zero-trust principles for large-scale IoT and cyber-physical systems.
-The system must support:
+> **A security-first control surface for connected-device operations.**
 
-i~ Secure Boot
-i~ Hardware Root of Trust
-i~ Device Authentication
-i~ Encrypted Communication
-i~ Real-Time Tamper Detection
-i~ Scalability for smart cities and industrial IoT
+[![Built with React](https://img.shields.io/badge/React-18-111111?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-111111?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Frontend-111111?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
 
-🚀 Our Solution
+---
 
-Void-Trust is a Zero-Trust IoT security architecture that enforces continuous cryptographic verification of devices and dynamically manages device trust state.
+## Overview
 
-The system is divided into two layers:
-🏗 Architecture Overview
+IoT Control Hub explores a modern command interface for authenticated IoT systems, combining a responsive web client with device-oriented data flows and security-aware state management.
 
+The repository is maintained by **K. Kishor Kumar** as part of an evolving portfolio of software, AI, IoT and product-engineering experiments.
 
-[ IoT Device (ESP32 / Future Secure Hardware) ]
-            ↓
-   HTTPS Signed Request
-            ↓
-Zero-Trust Verification Layer (Supabase Edge Function)
-            ↓
-HMAC Verification + Replay Protection
-            ↓
-Trust State Update (Database)
-            ↓
-Dashboard / Control System
+## Highlights
 
-🔐 Phase 1 – Zero-Trust Enforcement Layer (Implemented)
+- Device-focused control and monitoring workflows
+- Supabase-backed data integration
+- Responsive dashboard UI with reusable components
+- Motion, charts and operational status views
 
-✅ Device Authentication
-HMAC-SHA256 per-device secret
-Server-side signature recalculation
+## Technology
 
-✅ Replay Protection
-Timestamp validation (5-minute window)
-Prevents reused packet attacks
+React 18 · TypeScript · Vite · Tailwind CSS · shadcn/ui · Supabase · Framer Motion · Recharts · Socket.IO
 
-✅ Encrypted Communication
-HTTPS (TLS secured)
+## Project Status
 
-✅ Real-Time Tamper Detection
-If event_type = TAMPER_DETECTED:
-trust_state → compromised
-lockdown → true
+**Prototype / security-platform development**
 
-✅ Trust State Management
-verified
-compromised
-lockdown enabled
+This README intentionally documents the project at the repository level. Implementation details are kept aligned with the codebase as the project evolves.
 
-🧩 Phase 2 – Secure Hardware Architecture (Designed)
+## Local Development
 
-To fully meet hardware-level requirements:
+```bash
+git clone https://github.com/Kishordiu/iot-control-hub.git
+cd <project-directory>
+npm install
+npm run dev
+```
 
-🔹 Secure Boot
-Digitally signed firmware
-Bootloader verification before execution
-🔹 Hardware Root of Trust
-Secure element (e.g., ATECC608A) or ESP32 eFuse storage
-Secret key never exposed to firmware layer
-🔹 On-Device Tamper Detection
-GPIO tamper switch
-Voltage anomaly detection
-Physical enclosure sensor
-🔹 Signed Hardware Events
-All tamper events cryptographically signed before transmission.
+Production build:
 
-🛡 Zero-Trust Principles Implemented
-Never trust device permanently
-Verify every request
-Enforce cryptographic identity
-Revoke trust dynamically
-Lock compromised nodes automatically
+```bash
+npm run build
+npm run preview
+```
 
-🌍 Scalability
-Designed for deployment across:
-Smart Cities
-Industrial IoT
-Critical Infrastructure
-Cyber-Physical Systems
-Serverless backend ensures horizontal scalability.
+Run the test suite when available:
 
-📊 Current Status
-Phase 1 – Zero-Trust Backend: ✅ Complete
-Phase 2 – Secure Hardware Module: 🔜 In Development
-The backend is production-ready and supports direct hardware integration without architectural modification.
+```bash
+npm run test
+```
 
-💡 Innovation
-Unlike traditional IoT systems that trust devices after initial provisioning, Void-Trust enforces continuous cryptographic validation and dynamic trust enforcement.
-This establishes the foundation for a hardware-backed Zero-Trust IoT security architecture.
+## Repository Principles
+
+- Keep secrets and local environment files out of source control.
+- Prefer small, reusable components over duplicated UI.
+- Keep documentation synchronized with the implementation.
+- Preserve third-party license notices where required.
+
+## Author
+
+**K. Kishor Kumar**  
+GitHub: [@Kishordiu](https://github.com/Kishordiu)
+
+---
+
+<p align="center">Built with curiosity, iteration, and engineering discipline.</p>
