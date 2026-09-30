@@ -19,7 +19,7 @@ interface AuthState {
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, password: string) => Promise<void>;
+  resetPassword: (password: string) => Promise<void>;
   clearError: () => void;
 }
 
@@ -32,6 +32,41 @@ interface RegisterPayload {
 
 const AuthContext = createContext<AuthState | null>(null);
 
+const toAppUser = (authUser: {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, unknown>;
+}): User => {
+  const metadata = authUser.user_metadata ?? {};
+  const email = authUser.email ?? "";
+  const fallbackName = email.split("@")[0] || "Operator";
+  const metadataRole = metadata.role;
+  const role =
+    metadataRole === "admin" ||
+    metadataRole === "operator" ||
+    metadataRole === "viewer"
+      ? metadataRole
+      : "viewer";
+
+  return {
+    id: authUser.id,
+    email,
+    name:
+      typeof metadata.name === "string" && metadata.name.trim()
+        ? metadata.name.trim()
+        : typeof metadata.full_name === "string" && metadata.full_name.trim()
+          ? metadata.full_name.trim()
+          : fallbackName,
+    role,
+    tenantId:
+      typeof metadata.tenant_id === "string"
+        ? metadata.tenant_id
+        : typeof metadata.tenantId === "string"
+          ? metadata.tenantId
+          : "",
+  };
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,37 +76,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!user;
 
-  // ✅ Proper session restore + listener
   useEffect(() => {
     let isMounted = true;
 
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!isMounted) return;
-
-      if (session?.user) {
-        setUser({
-          email: session.user.email ?? "",
-          tenantId: "",
-        });
-      } else {
-        setUser(null);
-      }
-
+      setUser(session?.user ? toAppUser(session.user) : null);
       setInitializing(false);
     });
 
-    // Listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (session?.user) {
-          setUser({
-            email: session.user.email ?? "",
-            tenantId: "",
-          });
-        } else {
-          setUser(null);
-        }
+        setUser(session?.user ? toAppUser(session.user) : null);
       }
     );
 
@@ -89,24 +105,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(null);
 
       try {
-        const { data, error } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
         if (error) throw error;
 
         if (data.user) {
-          setUser({
-            email: data.user.email ?? "",
-            tenantId: "",
-          });
-
+          setUser(toAppUser(data.user));
           navigate("/dashboard");
         }
-      } catch (err: any) {
-        setError(err.message || "Authentication failed");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Authentication failed");
       } finally {
         setLoading(false);
       }
@@ -114,35 +125,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [navigate]
   );
 
-  const register = useCallback(async (payload: RegisterPayload) => {
+  const register = useCallback(
+    async (payload: RegisterPayload) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email: payload.email,
+          password: payload.password,
+          options: {
+            data: {
+              name: payload.adminName ?? "",
+              company_name: payload.companyName ?? "",
+              role: "admin",
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          setUser(toAppUser(data.user));
+        }
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Registration failed");
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  const logout = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email: payload.email,
-        password: payload.password,
-      });
-
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
-
-      alert("Registration successful! You can now log in.");
-    } catch (err: any) {
-      setError(err.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const logout = useCallback(async () => {
-    setLoading(true);
-
-    try {
-      await supabase.auth.signOut();
       setUser(null);
       navigate("/login");
-    } catch (err) {
-      console.error(err);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Logout failed");
     } finally {
       setLoading(false);
     }
@@ -153,41 +178,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo:
-            window.location.origin + "/reset-password",
-        }
-      );
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
 
       if (error) throw error;
-
-      alert("Check your email for password reset link!");
-    } catch (err: any) {
-      setError(err.message || "Request failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Request failed");
     } finally {
       setLoading(false);
     }
   }, []);
 
   const resetPassword = useCallback(
-    async (token: string, password: string) => {
+    async (password: string) => {
       setLoading(true);
       setError(null);
 
       try {
-        const { error } = await supabase.auth.updateUser(
-          { password },
-          { accessToken: token }
-        );
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
+        if (!session) {
+          throw new Error(
+            "Your password-reset session has expired. Please request a new reset link."
+          );
+        }
+
+        const { error } = await supabase.auth.updateUser({ password });
         if (error) throw error;
 
-        alert("Password reset successful! Please log in.");
+        await supabase.auth.signOut();
+        setUser(null);
         navigate("/login");
-      } catch (err: any) {
-        setError(err.message || "Reset failed");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Password reset failed");
       } finally {
         setLoading(false);
       }
@@ -195,7 +221,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [navigate]
   );
 
-  // Show loading spinner while restoring session
   if (initializing) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -226,9 +251,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx)
-    throw new Error(
-      "useAuth must be used within AuthProvider"
-    );
+  if (!ctx) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
   return ctx;
 }
