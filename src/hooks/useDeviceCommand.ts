@@ -5,7 +5,7 @@ export function useDeviceCommand(deviceId: string) {
   const queryClient = useQueryClient();
 
   const updateDevice = useMutation({
-    mutationFn: async (updates: any) => {
+    mutationFn: async (updates: Record<string, unknown>) => {
       const { error } = await supabase
         .from("devices")
         .update(updates)
