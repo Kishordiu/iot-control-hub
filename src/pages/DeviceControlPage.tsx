@@ -9,7 +9,7 @@ interface Telemetry {
   id: string;
   deviceId: string;
   event_type: string;
-  pay_load: any;
+  pay_load: unknown;
   created_at: string;
 }
 
