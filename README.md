@@ -22,8 +22,24 @@ React 18 · TypeScript · Vite · Supabase · Socket.IO · Recharts · Framer Mo
 
 ## RUN
 
+**Requirements:** Node.js 20+ and npm.
+
 ```bash
-npm install\nnpm run dev
+npm ci
+npm run dev
+```
+
+Vite prints the local development URL in the terminal. To check a production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+Configured tests can be run with:
+
+```bash
+npm run test
 ```
 
 ## PROJECT STATE
