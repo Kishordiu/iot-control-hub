@@ -22,25 +22,22 @@ React 18 · TypeScript · Vite · Supabase · Socket.IO · Recharts · Framer Mo
 
 ## RUN
 
-**Requirements:** Node.js 20+ and npm.
+Requirements: Node.js and npm.
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Vite prints the local development URL in the terminal. To check a production build:
+Vite prints the development URL. Before shipping, run:
 
 ```bash
 npm run build
-npm run preview
+npm run lint
+npm test
 ```
 
-Configured tests can be run with:
-
-```bash
-npm run test
-```
+Supabase configuration, when used, belongs in a local ignored environment file; never commit service-role credentials.
 
 ## PROJECT STATE
 
