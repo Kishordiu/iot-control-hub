@@ -17,7 +17,7 @@ export type Device = {
   last_key_rotation: string | null;
   firmware_version: string | null;
   last_seen: string | null;
-  metrics: any;
+  metrics: Record<string, unknown> | null;
   created_at: string;
 };
 
