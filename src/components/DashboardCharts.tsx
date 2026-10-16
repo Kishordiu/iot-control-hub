@@ -72,7 +72,7 @@ export function RiskBarChart() {
             <YAxis tick={{ fill: "hsl(215, 12%, 50%)", fontSize: 11 }} stroke="hsl(220, 14%, 18%)" />
             <Tooltip contentStyle={{ background: "hsl(220, 18%, 10%)", border: "1px solid hsl(220, 14%, 18%)", borderRadius: 8, color: "hsl(210, 20%, 92%)" }} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-              {(data || []).map((_: any, i: number) => (
+              {(data || []).map((_: unknown, i: number) => (
                 <Cell key={i} fill={[CHART_COLORS.success, CHART_COLORS.warning, CHART_COLORS.destructive][i % 3]} />
               ))}
             </Bar>
