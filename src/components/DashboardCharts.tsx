@@ -99,7 +99,7 @@ export function DeviceStatusDonut() {
         <ResponsiveContainer width="100%" height={260}>
           <PieChart>
             <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value" nameKey="name">
-              {(data || []).map((_: any, i: number) => (
+              {(data || []).map((_: unknown, i: number) => (
                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
               ))}
             </Pie>
