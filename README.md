@@ -10,7 +10,9 @@ IoT Control Hub turns a connected-device fleet into an operator-facing control s
 
 ## THE EXPERIENCE
 
-**Observe the fleet at a glance.**  \n**Control only what the system permits.**  \n**Keep realtime state close to the operator.**
+**Observe the fleet at a glance.**  
+**Control only what the system permits.**  
+**Keep realtime state close to the operator.**
 
 ## THE SYSTEM
 
