@@ -1,5 +1,7 @@
 ![IOT CONTROL HUB — bespoke brushed-metal project artwork](./assets/readme-metal-hero.svg)
 
+# IOT CONTROL HUB
+
 > **SECURE DEVICE OPERATIONS.**
 
 ## THE PREMISE
