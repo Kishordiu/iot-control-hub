@@ -1,6 +1,4 @@
-# IOT CONTROL HUB
-
-![IOT CONTROL HUB cinematic hero](https://capsule-render.vercel.app/api?type=rect&color=0:070707,100:171717&height=230&text=IOT%20CONTROL%20HUB&fontColor=F3F3EE&fontSize=40&fontAlignY=38&desc=SECURE%20DEVICE%20OPERATIONS&descColor=999991&descSize=12&descAlignY=66&animation=scaleIn)
+![IOT CONTROL HUB — bespoke brushed-metal project artwork](./assets/readme-metal-hero.svg)
 
 > **SECURE DEVICE OPERATIONS.**
 
