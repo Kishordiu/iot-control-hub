@@ -2,51 +2,54 @@
 
 # IOT CONTROL HUB
 
-> **SECURE DEVICE OPERATIONS.**
+**A device-operations workspace for reviewing connected-device state, telemetry, and control workflows.**
 
-## THE PREMISE
+IoT Control Hub is a React/TypeScript interface built around device inventory and operator-facing actions. The current frontend reads device and telemetry data through Supabase and uses Supabase channels for telemetry updates in the device detail flow. Device commands and security decisions still depend on the backend, row policies, and device-side integrations being correctly configured.
 
-IoT Control Hub turns a connected-device fleet into an operator-facing control surface: state first, actions second, and security context visible instead of hidden behind the UI.
+## The operator loop
 
-## THE EXPERIENCE
+```text
+Device registry
+      │
+      ▼
+Dashboard / device detail
+      │
+      ├──► Read device metadata
+      ├──► Review stored telemetry
+      └──► Present control actions
+                │
+                ▼
+      Configured backend / device layer
+```
 
-**Observe the fleet at a glance.**  
-**Control only what the system permits.**  
-**Keep realtime state close to the operator.**
+## What the interface covers
 
-## THE SYSTEM
+- **Fleet overview:** Summary cards for device state and stored logs.
+- **Device detail:** Read a selected device record and its telemetry history.
+- **Telemetry updates:** Supabase realtime subscription is used in the device detail flow when the database is configured.
+- **Control surfaces:** Device-control UI for operator workflows; actual command delivery depends on the configured service and device implementation.
 
-The frontend is built around React/TypeScript with Supabase-backed flows, Socket.IO-ready realtime transport, Recharts for operational signals, and Framer Motion for state transitions.
+## Stack
 
-## THE STACK
+React · TypeScript · Vite · Supabase JavaScript client · React Router · TanStack Query · Recharts · Framer Motion
 
-React 18 · TypeScript · Vite · Supabase · Socket.IO · Recharts · Framer Motion · Tailwind CSS
+## Run locally
 
-## RUN
-
-Requirements: Node.js and npm.
+**Requirements:** Node.js and npm.
 
 ```bash
+git clone https://github.com/Kishordiu/iot-control-hub.git
+cd iot-control-hub
 npm ci
 npm run dev
 ```
 
-Vite prints the development URL. Before shipping, run:
+The local URL is printed by Vite. Configure the intended Supabase URL and public anon/publishable key in the project’s local environment setup before testing database-backed views.
 
-```bash
-npm run build
-npm run lint
-npm test
-```
+## Production boundary
 
-Supabase configuration, when used, belongs in a local ignored environment file; never commit service-role credentials.
-
-## PROJECT STATE
-
-**Prototype / security-platform development**
-
-The repository documents the capabilities that are actually implemented; future integrations are intentionally separated from the current product surface.
+A dashboard value is only as reliable as the underlying records and policies. Verify Row Level Security, operator permissions, backend authorization, command acknowledgement, device identity, and event provenance before connecting real devices. Do not place service-role keys or hardware secrets in browser-exposed `VITE_*` variables.
 
 ---
 
-<p align="center"><strong>K. KISHOR KUMAR</strong><br><sub>ENGINEERING / PRODUCT / SYSTEMS</sub></p>
+<p align="center"><sub>DIU FOUNDRY · CONNECTED SYSTEMS / OPERATIONS DESIGN</sub></p>
